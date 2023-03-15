@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div style={{ width: "60%", margin: "auto" }}>
-      <h3>New expense</h3>
+      <h3>New expense 2</h3>
       <ExpenseForm />
     <hr></hr>
       <h3>Your expenses</h3>
