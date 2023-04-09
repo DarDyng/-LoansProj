@@ -1,21 +1,28 @@
-import axios from "axios";
-import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authenticationResponse, userCredentionals } from "./auth-models";
-import AuthForm from "./AuthForm";
-import { getClaims, saveToken } from "./handleJwt";
+import RegisterForm from "./RegisterForm";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { register } from "../../store/features/authSlice";
+import { useEffect } from "react";
 
 const Register = () => {
-    const [errors, setErrors] = useState<string[]>([]);
     const navigate = useNavigate();
-
+    const dispatch = useAppDispatch();
+    const auth = useAppSelector(state => state.auth);
+    
+    // useEffect(() => {
+    //     if (auth.loading === false && !auth.error) {
+    //         navigate("/login");
+    //     }
+    // }, [auth]
+    // )
     return <>
         <h3>Welcome to the site!</h3>
         <h3>Register</h3>
-        <AuthForm model={{ email: "", password: "" }}
+        <RegisterForm model={{ email: "", password: "", username: "" }}
             onSubmit={async (values) => {
-                console.log(values);
-            }} ></AuthForm>
+                dispatch(register({ Email: values.email, Username: values.username, Password: values.password }));
+                navigate("/login");
+            }} ></RegisterForm>
     </>
 };
 

@@ -1,15 +1,17 @@
 import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import MainPage from "../pages/MainPage";
 import RootLayout from "../pages/RootLayout";
-import LoginPage from "../pages/LoginPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import Login from "../components/auth/Login";
+import Register from "../components/auth/Register";
 
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<RootLayout />}>
             <Route index element={<MainPage />} />
-            <Route path="login" element={<LoginPage />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register/>} />
             <Route path="*" element={<NotFoundPage />} />
         </Route>
     )

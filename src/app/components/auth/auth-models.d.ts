@@ -8,6 +8,12 @@ export interface userCredentionals{
     password: string;
 };
 
+export interface registerCredentionals{
+    email:string;
+    username:string;
+    password: string;
+};
+
 export interface authenticationResponse{
     token: string;
     expiration: Date;

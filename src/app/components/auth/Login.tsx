@@ -1,41 +1,35 @@
-import axios from "axios";
-import { useState } from "react";
-import { urlAccounts } from "../endpoints";
-import DisplayErrors from "../utils/DisplayErrors";
-import AuthContext from "./auth-context";
-import { authenticationResponse, userCredentionals } from "./auth-models";
 import AuthForm from "./AuthForm";
-import { getClaims, saveToken } from "./handleJwt";
-import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { login } from "../../store/features/authSlice";
+import { useEffect } from "react";
+import authHeader from "../../services/auth-header";
+
+export interface LoginFormValues {
+    email: string;
+    password: string;
+}
 
 const Login = () => {
-    const ctx = useContext(AuthContext);
     const navigate = useNavigate();
-    const [errors, setErrors] = useState<string[]>([]);
+    const dispatch = useAppDispatch();
+    const auth = useAppSelector(state => state.auth);
 
-    async function login(credentials: userCredentionals) {
-        try {
-            const response = await axios
-                .post<authenticationResponse>(`${urlAccounts}/login`, credentials);
-            saveToken(response.data);
-            ctx.update(getClaims());
-            navigate("/");
-            console.log(response.data);
-        } catch (error: any) {
-            if (error.response.data) {
-                setErrors(error.response.data);
-            }
-        }
+    // useEffect(() => {
+    //     if (auth.loading === false && !auth.error) {
+    //         navigate("/");
+    //     }
+    // }, [auth])
+
+    const handleLogin = (formValue: LoginFormValues) => {
+        const { password, email: email } = formValue;
+        dispatch(login({ Password: password, Email: email }));
     }
 
     return <>
         <h3>Login</h3>
-        <DisplayErrors errors={errors} />
         <AuthForm model={{ email: "", password: "" }}
-            onSubmit={async (values) => {
-                await login(values);
-            }}></AuthForm>
+            onSubmit={(values) => handleLogin({ email: values.email, password: values.password })} />
     </>
 };
 
