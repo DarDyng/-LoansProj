@@ -13,8 +13,14 @@ export interface IAuthSliceState {
     isLoggedIn: boolean;
     loading: boolean;
     user: IAuthenticatedUserResponse | null,
-    error: string | undefined;
+    error: string[] | undefined;
+    modelErrors: IModelErrors[] | undefined;
     userInfo: IUserInfo | null;
+};
+
+export interface IModelErrors {
+    name: string;
+    errors: string[];
 };
 
 const user = JSON.parse(localStorage.getItem("user")!) as IAuthenticatedUserResponse;
@@ -23,44 +29,46 @@ const initialState: IAuthSliceState = user ? {
     isLoggedIn: true,
     user: user,
     error: undefined,
+    modelErrors: undefined,
     loading: false,
     userInfo: null,
-} : { isLoggedIn: false, user: null, error: undefined, loading: false, userInfo: null };
+} : { isLoggedIn: false, user: null, error: undefined, loading: false, userInfo: null, modelErrors: undefined };
 
 
-export const login = createAsyncThunk<IAuthenticatedUserResponse, ILoginRequest, { rejectValue: string }>(
+export const login = createAsyncThunk<IAuthenticatedUserResponse, ILoginRequest, { rejectValue: { errors: string[], modelErrors?: IModelErrors[] } }>(
     "auth/login",
     async (login, thunkAPI) => {
         try {
             const response = await axios.post(loginUrl, login);
 
             return response.data;
-        } catch (error) {
-           return thunkAPI.rejectWithValue("Failed login");
+        } catch (error: any) {
+            console.log(error.response);
+            return thunkAPI.rejectWithValue(error.response.data);
         }
     }
 );
 
-export const register = createAsyncThunk<unknown, IRegisterRequest, { rejectValue: string }>(
+export const register = createAsyncThunk<unknown, IRegisterRequest, { rejectValue: { errors: string[], modelErrors?: IModelErrors[] } }>(
     "auth/register",
     async (register, thunkAPI) => {
         try {
             await axios.post(registerUrl, register);
-        } catch (error) {
-            return thunkAPI.rejectWithValue("Register failed");
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response.data);
         }
     }
 );
 
-export const google = createAsyncThunk<IAuthenticatedUserResponse, IGoogleRequest, { rejectValue: string }>(
+export const google = createAsyncThunk<IAuthenticatedUserResponse, IGoogleRequest, { rejectValue: { errors: string[], modelErrors?: IModelErrors[] } }>(
     "auth/google",
     async (googleRequest, thunkAPI) => {
         try {
             const resposne = await axios.post(googleUrl, googleRequest);
 
             return resposne.data;
-        } catch (error) {
-            return thunkAPI.rejectWithValue("Google auth failed!");
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response.data);
         }
     }
 )
@@ -134,16 +142,25 @@ const authSlice = createSlice({
             }
         }).addCase(login.rejected, (state, action) => {
             console.log("REJECTED");
-            state.error = action.payload;
+            if (action?.payload?.modelErrors) {
+                state.modelErrors = action.payload.modelErrors;
+            } else {
+                state.error = action.payload?.errors;
+            }
+
             state.loading = false;
         }).addCase(register.pending, (state, action) => {
             state.loading = true;
         }).addCase(register.fulfilled, (state, action) => {
             state.loading = false;
             state.error = undefined;
-            
+
         }).addCase(register.rejected, (state, action) => {
-            state.error = action.payload;
+            if (action?.payload?.errors) {
+                state.modelErrors = action.payload.modelErrors;
+            } else {
+                state.error = action.payload?.errors;
+            }
             state.loading = false;
         })
             .addCase(google.pending, (state, action) => {
@@ -158,7 +175,11 @@ const authSlice = createSlice({
                 state.userInfo = authService.getInfoFromJwt(action.payload.token);
             })
             .addCase(google.rejected, (state, action) => {
-                state.error = action.payload;
+                if (action?.payload?.errors) {
+                    state.modelErrors = action.payload.modelErrors;
+                } else {
+                    state.error = action.payload?.errors;
+                }
                 state.loading = false;
             });
     }
