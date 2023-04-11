@@ -13,7 +13,7 @@ export interface IAuthSliceState {
     isLoggedIn: boolean;
     loading: boolean;
     user: IAuthenticatedUserResponse | null,
-    error: string[] | undefined;
+    errors: string[] | undefined;
     modelErrors: IModelErrors[] | undefined;
     userInfo: IUserInfo | null;
 };
@@ -28,14 +28,14 @@ const user = JSON.parse(localStorage.getItem("user")!) as IAuthenticatedUserResp
 const initialState: IAuthSliceState = user ? {
     isLoggedIn: true,
     user: user,
-    error: undefined,
+    errors: undefined,
     modelErrors: undefined,
     loading: false,
     userInfo: null,
-} : { isLoggedIn: false, user: null, error: undefined, loading: false, userInfo: null, modelErrors: undefined };
+} : { isLoggedIn: false, user: null, errors: undefined, loading: false, userInfo: null, modelErrors: undefined };
 
 
-export const login = createAsyncThunk<IAuthenticatedUserResponse, ILoginRequest, { rejectValue: { errors: string[], modelErrors?: IModelErrors[] } }>(
+export const login = createAsyncThunk<IAuthenticatedUserResponse, ILoginRequest, { rejectValue: string[] }>(
     "auth/login",
     async (login, thunkAPI) => {
         try {
@@ -49,7 +49,7 @@ export const login = createAsyncThunk<IAuthenticatedUserResponse, ILoginRequest,
     }
 );
 
-export const register = createAsyncThunk<unknown, IRegisterRequest, { rejectValue: { errors: string[], modelErrors?: IModelErrors[] } }>(
+export const register = createAsyncThunk<unknown, IRegisterRequest, { rejectValue: string[] }>(
     "auth/register",
     async (register, thunkAPI) => {
         try {
@@ -60,7 +60,7 @@ export const register = createAsyncThunk<unknown, IRegisterRequest, { rejectValu
     }
 );
 
-export const google = createAsyncThunk<IAuthenticatedUserResponse, IGoogleRequest, { rejectValue: { errors: string[], modelErrors?: IModelErrors[] } }>(
+export const google = createAsyncThunk<IAuthenticatedUserResponse, IGoogleRequest, { rejectValue: string[]}>(
     "auth/google",
     async (googleRequest, thunkAPI) => {
         try {
@@ -125,6 +125,9 @@ const authSlice = createSlice({
             }
 
 
+        },
+        clearErrors: (state) => {
+            state.errors = undefined
         }
     },
     extraReducers: (builder) => {
@@ -135,17 +138,15 @@ const authSlice = createSlice({
             if (action.payload.token) {
                 state.loading = false;
                 state.isLoggedIn = true;
-                state.error = undefined;
+                state.errors = undefined;
                 state.user = action.payload;
                 authService.setToken(action.payload);
                 state.userInfo = authService.getInfoFromJwt(action.payload.token);
             }
         }).addCase(login.rejected, (state, action) => {
             console.log("REJECTED");
-            if (action?.payload?.modelErrors) {
-                state.modelErrors = action.payload.modelErrors;
-            } else {
-                state.error = action.payload?.errors;
+            if (action?.payload) {
+                state.errors = action.payload;
             }
 
             state.loading = false;
@@ -153,13 +154,11 @@ const authSlice = createSlice({
             state.loading = true;
         }).addCase(register.fulfilled, (state, action) => {
             state.loading = false;
-            state.error = undefined;
+            state.errors = undefined;
 
         }).addCase(register.rejected, (state, action) => {
-            if (action?.payload?.errors) {
-                state.modelErrors = action.payload.modelErrors;
-            } else {
-                state.error = action.payload?.errors;
+            if (action?.payload) {
+                state.errors = action.payload;
             }
             state.loading = false;
         })
@@ -169,22 +168,20 @@ const authSlice = createSlice({
             .addCase(google.fulfilled, (state, action) => {
                 console.log("Success login! ", action.payload);
                 state.isLoggedIn = true;
-                state.error = undefined;
+                state.errors = undefined;
                 state.loading = false;
                 authService.setToken(action.payload);
                 state.userInfo = authService.getInfoFromJwt(action.payload.token);
             })
             .addCase(google.rejected, (state, action) => {
-                if (action?.payload?.errors) {
-                    state.modelErrors = action.payload.modelErrors;
-                } else {
-                    state.error = action.payload?.errors;
+                if (action?.payload) {
+                    state.errors = action.payload;
                 }
                 state.loading = false;
             });
     }
 });
 
-export const { logout, setIsLoggedIn, handleAuth } = authSlice.actions;
+export const { logout, setIsLoggedIn, handleAuth, clearErrors } = authSlice.actions;
 
 export default authSlice.reducer;

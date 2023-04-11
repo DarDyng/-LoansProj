@@ -1,0 +1,8 @@
+.errors{
+    display: flex;
+    flex-direction: column;
+}
+
+.errors > * {
+    color: rgb(255, 0, 0);
+}

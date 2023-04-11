@@ -9,7 +9,7 @@ import { useAppSelector } from "../../store/store";
 import { IModelErrors } from "../../store/features/authSlice";
 
 const AuthForm = (props: authFormProps) => {
-    const { loading, error, modelErrors } = useAppSelector(state => state.auth)
+    const { loading, errors: error, modelErrors } = useAppSelector(state => state.auth)
 
     return <>
         <div>

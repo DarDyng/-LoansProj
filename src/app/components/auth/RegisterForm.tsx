@@ -5,7 +5,8 @@ import TextField from "../forms/TextField";
 import { Link, useNavigation } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Google from "./Google";
-import { useAppSelector } from "../../store/store";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { clearErrors } from "../../store/features/authSlice";
 
 const RegisterForm = (props: RegisterFormProps) => {
     const isLoading = useAppSelector(state => state.auth.loading)
@@ -37,7 +38,7 @@ const RegisterForm = (props: RegisterFormProps) => {
 
                             <div className="mt-3 d-flex gap-2">
                                 <button className="btn btn-primary" disabled={isLoading} type="submit">Send</button>
-                                <Link className="btn btn-secondary" to={"/"}>Cancel</Link>
+                                <Link className="btn btn-secondary" onClick={() => useAppDispatch()(clearErrors())} to={"/"}>Cancel</Link>
                             </div>
                         </Form>
                     </>
