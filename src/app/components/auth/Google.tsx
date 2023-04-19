@@ -6,8 +6,12 @@ const Google = () => {
     const dispatch = useAppDispatch();
 
     return <GoogleLogin
+    theme={"outline"}
+    size={"medium"}
+    shape={"pill"}
+    logo_alignment={"center"}
+    locale={"en_US"}
     onSuccess={(resposne) => {
-        console.log(resposne);
         if (resposne.credential) {
             dispatch(google({IdToken: resposne.credential}))
             dispatch(handleAuth());

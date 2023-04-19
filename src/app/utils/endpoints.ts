@@ -1,4 +1,4 @@
-const baseUrl: string = "https://localhost:7242";
+const baseUrl: string = "https://api-loan-proj.azurewebsites.net";
 
 export const loginUrl = `${baseUrl}/api/account/login`;
 export const registerUrl = `${baseUrl}/api/account/register`;

@@ -7,17 +7,14 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Google from "./Google";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { clearErrors } from "../../store/features/authSlice";
+import Socials from "./Socials";
+import PasswordField from "../forms/PasswordField";
+import { useState } from "react";
 
 const RegisterForm = (props: RegisterFormProps) => {
     const isLoading = useAppSelector(state => state.auth.loading)
     return <>
         <div>
-            <div className="social-logins">
-                <GoogleOAuthProvider
-                    clientId="751194953100-ir5sfu1kssme9p9sh9a5m6cls66n99uu.apps.googleusercontent.com">
-                    <Google />
-                </GoogleOAuthProvider>
-            </div>
             <Formik
                 initialValues={props.model}
                 onSubmit={props.onSubmit}
@@ -34,11 +31,14 @@ const RegisterForm = (props: RegisterFormProps) => {
                         <Form>
                             <TextField displayField="Email" field="email" />
                             <TextField displayField="Username" field="username" type={"text"} />
-                            <TextField displayField="Password" field="password" type={"password"} />
-
-                            <div className="mt-3 d-flex gap-2">
-                                <button className="btn btn-primary" disabled={isLoading} type="submit">Send</button>
-                                <Link className="btn btn-secondary" onClick={() => useAppDispatch()(clearErrors())} to={"/"}>Cancel</Link>
+                            <PasswordField />
+                            <div className="m-2">
+                                <p className="text-center">or sign in with:</p>
+                                <Socials />
+                            </div>
+                            <div className="mt-3 d-flex flex-column gap-2">
+                                <button className="btn btn-primary" disabled={isLoading} type="submit">Register</button>
+                                <Link className="btn btn-secondary" to={"/"}>Cancel</Link>
                             </div>
                         </Form>
                     </>

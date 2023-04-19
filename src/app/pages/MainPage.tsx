@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpesnesList from "../components/ExpensesList";
 import axios from "axios";
-import { getLoansUrl } from "../utils/enpoints";
+import { getLoansUrl } from "../utils/endpoints";
 
 const MainPage = () => {
     return <>

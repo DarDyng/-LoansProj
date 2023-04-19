@@ -1,8 +1,11 @@
 import { useAppSelector } from "../../store/store";
 import classes from "./DisplayErrors.module.css";
 
-const DisplayErrors = () => {
-    const {errors} = useAppSelector(state => state.auth);
+interface IDisplayProps{
+    erorrs: string[]; 
+}
+
+const DisplayErrors = ({erorrs: errors} : IDisplayProps) => {
     return <>
          {(errors && errors.length > 0) && <>
             <ul className={classes.errors}>

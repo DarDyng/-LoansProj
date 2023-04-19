@@ -1,9 +1,10 @@
-import AuthForm from "./AuthForm";
+import LoginForm from "./LoginForm";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { login } from "../../store/features/authSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import authHeader from "../../services/auth-header";
+import DisplayErrors from "../forms/DisplayErrors";
 
 export interface LoginFormValues {
     email: string;
@@ -13,23 +14,34 @@ export interface LoginFormValues {
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const auth = useAppSelector(state => state.auth);
 
-    // useEffect(() => {
-    //     if (auth.loading === false && !auth.error) {
-    //         navigate("/");
-    //     }
-    // }, [auth])
+    const [errors, setErrors] = useState<string[]>([]);
+
+    const auth = useAppSelector(state => state.auth);
 
     const handleLogin = (formValue: LoginFormValues) => {
         const { password, email: email } = formValue;
-        dispatch(login({ Password: password, Email: email }));
+        dispatch(login({ Password: password, Email: email })).unwrap().then(
+            (res) => {
+                console.log("Okey in login", res);
+                if (errors.length > 0) {
+                    setErrors([]);
+                }
+                navigate("/");
+            },
+            (err) => {
+                setErrors(err);
+            }
+        );
     }
 
     return <>
-        <h3>Login</h3>
-        <AuthForm model={{ email: "", password: "" }}
-            onSubmit={(values) => handleLogin({ email: values.email, password: values.password })} />
+        <div className="m-3">
+            <h3>Login</h3>
+            <DisplayErrors erorrs={errors} />
+            <LoginForm model={{ email: "", password: "" }}
+                onSubmit={(values) => handleLogin({ email: values.email, password: values.password })} />
+        </div>
     </>
 };
 

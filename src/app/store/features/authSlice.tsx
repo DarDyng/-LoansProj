@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IAuthenticatedUserResponse, IGoogleRequest, ILoginRequest, IRegisterRequest, IRole } from "../../models/auth.models";
 import axios from "axios";
-import { googleUrl, loginUrl, registerUrl } from "../../utils/enpoints";
+import { googleUrl, loginUrl, registerUrl } from "../../utils/endpoints";
 import authService from "../../services/auth-service";
 
 export interface IUserInfo {
@@ -49,11 +49,13 @@ export const login = createAsyncThunk<IAuthenticatedUserResponse, ILoginRequest,
     }
 );
 
-export const register = createAsyncThunk<unknown, IRegisterRequest, { rejectValue: string[] }>(
+export const register = createAsyncThunk<string, IRegisterRequest, { rejectValue: string[] }>(
     "auth/register",
     async (register, thunkAPI) => {
         try {
-            await axios.post(registerUrl, register);
+            const response = await axios.post(registerUrl, register);
+
+            return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response.data);
         }

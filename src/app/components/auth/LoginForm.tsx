@@ -7,28 +7,14 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Google from "./Google";
 import { useAppSelector } from "../../store/store";
 import { IModelErrors } from "../../store/features/authSlice";
+import Socials from "./Socials";
+import PasswordField from "../forms/PasswordField";
 
-const AuthForm = (props: authFormProps) => {
+const LoginForm = (props: authFormProps) => {
     const { loading, errors: error, modelErrors } = useAppSelector(state => state.auth)
 
     return <>
         <div>
-            {modelErrors && <>
-                <ul>
-                    {/* {modelErrors?.map(x => x.errors?.map(error => <li key={x.name + x.errors.length}>
-                        {error}
-                    </li>))} */}
-                    {error?.map(x => <li key={x}>
-                        {x}
-                    </li>)}
-                </ul>
-            </>}
-            <div className="social-logins">
-                <GoogleOAuthProvider
-                    clientId="751194953100-ir5sfu1kssme9p9sh9a5m6cls66n99uu.apps.googleusercontent.com">
-                    <Google />
-                </GoogleOAuthProvider>
-            </div>
             <Formik
                 initialValues={props.model}
                 onSubmit={props.onSubmit}
@@ -42,11 +28,19 @@ const AuthForm = (props: authFormProps) => {
                 {(formikPorps) => {
                     return <>
                         <Form>
-                            <TextField displayField="Email" field="email" />
-                            <TextField displayField="Password" field="password" type={"password"}></TextField>
-
-                            <div className="mt-3 d-flex gap-2">
-                                <button className="btn btn-primary" disabled={loading} type="submit">Send</button>
+                            <div className="m-1">
+                                <TextField displayField="Email" field="email" />
+                            </div>
+                            <div className="m-1">
+                                <PasswordField />
+                            </div >
+                            <div className="m-2 text-center">
+                                <p>Not a member? <Link style={{ color: "blue" }} to={"/register"}>Register</Link></p>
+                                <p>or sign in with:</p>
+                                <Socials />
+                            </div>
+                            <div className="mt-3 d-flex flex-column gap-2">
+                                <button className="btn btn-primary" disabled={loading} type="submit">Login</button>
                                 <Link className="btn btn-secondary" to={"/"}>Cancel</Link>
                             </div>
                         </Form>
@@ -57,7 +51,7 @@ const AuthForm = (props: authFormProps) => {
     </>
 }
 
-export default AuthForm;
+export default LoginForm;
 
 interface authFormProps {
     model: userCredentionals;
