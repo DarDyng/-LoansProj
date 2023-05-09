@@ -1,40 +1,76 @@
 import { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import Button from "react-bootstrap/esm/Button";
-import { Expense } from "../models/expenses.models";
-import { getExpenses } from "../services/expenses";
+import { IExpense } from "../models/expenses.models";
 import { useAppDispatch, useAppSelector } from "../store/store";
-import ExpenseForm from "./ExpenseForm";
 import Timer from "./Timer";
+import { fetchExpenses } from "../store/features/expensesSlice";
+import Popup from "./ui/Popup/Popup";
+import EditExpenseForm from "./forms/Loans/EditExpenseForm";
+import LoadingSpinner from "./ui/LoadingSpinner/LoadingSpinner";
+import { Navigate } from "react-router-dom";
+import DeleteLoanForm from "./forms/Loans/DeleteLoanForm";
 
 const ExpesnesList = () => {
     const dispatch = useAppDispatch();
-    const expenses = useAppSelector(state => state.expenses.expenses);
+    const { expenses, loading } = useAppSelector(state => state.expenses);
+    const { isLoggedIn } = useAppSelector(state => state.auth);
 
     useEffect(() => {
-        getExpenses(dispatch);
+        dispatch(fetchExpenses());
     }, []);
 
+    useEffect(() => {
+
+    }, [expenses]);
+
     return <>
-        {expenses.map(e => {
-            return <div key={e.id} style={{ marginBottom: "1rem" }}>
-                <ListRow expense={e} />
-            </div>
-        })}
+        {isLoggedIn ? <>
+            {loading == true && expenses.length < 1 && <>
+                <div style={{ paddingTop: "20%" }}>
+                    <LoadingSpinner />
+                </div>
+            </>}
+            {loading == false && expenses.length < 1 && <>
+                <h2 style={{ margin: "2rem", textAlign: "center" }}>There is no expenses yet.</h2>
+            </>}
+            {expenses.map(e => {
+                return <div key={e.id} style={{ marginBottom: "1rem" }}>
+                    <ListRow expense={e} />
+                </div>
+            })}
+        </> : <></>}
     </>
 };
 
-const ListRow = ({ expense }: { expense: Expense }) => {
+const ListRow = ({ expense }: { expense: IExpense }) => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-    console.log("EXPENSE DATE", expense.endDate);
+    console.log("Expense object for now - ", expense);
 
-    return isEditing ? <ExpenseForm expense={expense} setIsEditing={setIsEditing}></ExpenseForm> : <div>
+    const handleClose = () => {
+        setIsEditing(false);
+    };
+
+    const handleCloseDelete = () => {
+        setIsDeleting(false);
+    };
+
+    return <div>
         <Row>
-            <Col>{expense.description}</Col>
-            <Col>${expense.amount}</Col>
-            <Col><Timer targetDate={expense.endDate}/></Col>
-            <Button style={{ width: "auto" }} variant="warning" onClick={() => setIsEditing(!isEditing)}>Edit</Button>
+            <div style={{
+                display: "flex",
+            }}>
+                <Col>{expense.name}</Col>
+                <Col>${expense.sumOfLoan}</Col>
+                <div style={{display: "flex", gap: "1rem"}}>
+                    <Button style={{ width: "auto" }} variant="warning" onClick={() => setIsEditing(!isEditing)}>Edit</Button>
+                    <Button style={{ width: "auto" }} variant="danger" onClick={() => setIsDeleting(!isDeleting)}>Delete</Button>
+                </div>
+            </div>
+            <DeleteLoanForm expense={expense} show={isDeleting} handleClose={handleCloseDelete}/>
+            <EditExpenseForm expense={expense} show={isEditing} handleClose={handleClose} />
         </Row>
         <hr></hr>
     </div>

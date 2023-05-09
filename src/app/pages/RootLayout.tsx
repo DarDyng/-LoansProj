@@ -9,7 +9,7 @@ const RootLayout = () => {
             <Navigation />
         </header>
         <Container>
-            <div style={{ width: "60%", margin: "auto" }}>
+            <div style={{ width: "90%", margin: "auto" }}>
                 <Outlet />
             </div>
         </Container>

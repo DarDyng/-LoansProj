@@ -34,7 +34,6 @@ const initialState: IAuthSliceState = user ? {
     userInfo: null,
 } : { isLoggedIn: false, user: null, errors: undefined, loading: false, userInfo: null, modelErrors: undefined };
 
-
 export const login = createAsyncThunk<IAuthenticatedUserResponse, ILoginRequest, { rejectValue: string[] }>(
     "auth/login",
     async (login, thunkAPI) => {
