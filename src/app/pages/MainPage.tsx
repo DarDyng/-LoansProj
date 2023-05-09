@@ -1,20 +1,32 @@
-import { useEffect } from "react";
-import ExpenseForm from "../components/ExpenseForm";
-import ExpesnesList from "../components/ExpensesList";
-import axios from "axios";
-import { getLoansUrl } from "../utils/endpoints";
+import { useState } from 'react';
+import ExpensesList from '../components/ExpensesList';
+import axios from 'axios';
+import { getLoansUrl } from '../utils/endpoints';
+import { IExpense, IExpenseCreateRequest } from '../models/expenses.models';
+import Popup from '../components/ui/Popup/Popup';
+import CreateLoanForm from '../components/forms/Loans/CreateLoanForm';
+import { Button } from 'react-bootstrap';
 
 const MainPage = () => {
-    return <>
-        <h3>New expense 3</h3>
-        <ExpenseForm />
-        <button onClick={async () => {
-            await axios.get(getLoansUrl);
-        }}>Get loans</button>
-        <hr></hr>
-        <h3>Your expenses</h3>
-        <ExpesnesList />
-    </>
+    const [expenseToEdit, setExpenseToEdit] = useState<IExpense | undefined>(undefined);
+
+    const handleSubmit = async (data: IExpenseCreateRequest) => {
+        // Handle create or update logic here
+        console.log(data);
+    };
+    const [showModal, setShowModal] = useState<boolean>(false);
+
+    return (
+        <>
+            <div style={{textAlign: "center", margin: "1rem"}}>
+                <Button onClick={() => setShowModal(!showModal)}>Add expense</Button>
+            </div>
+            <CreateLoanForm show={showModal} handleClose={() => setShowModal(false)} />
+            <hr />
+            <h3 style={{textAlign: "center"}}>Your loans</h3>
+            <ExpensesList />
+        </>
+    );
 };
 
 export default MainPage;

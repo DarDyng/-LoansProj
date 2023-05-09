@@ -2,17 +2,24 @@ import { useNavigate } from "react-router-dom";
 import RegisterForm from "./RegisterForm";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { clearErrors, register } from "../../store/features/authSlice";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DisplayErrors from "../forms/DisplayErrors";
 import { registerCredentionals } from "./auth-models";
 import DisplaySuccess from "../forms/DisplaySuccess";
 import classes from "./Register.module.css";
+import { AuthContextErrorHandler } from "../contexts/AuthContextErrorHandler";
 
 const Register = () => {
-    const dispatch = useAppDispatch();
     const auth = useAppSelector(state => state.auth);
-    const [errors, setErrors] = useState<string[]>([]);
+    const dispatch = useAppDispatch();
     const [successMessage, setSuccessMessage] = useState<string | undefined>();
+    const navigate = useNavigate();
+    const { errors, setErrors, clearError } = useContext(AuthContextErrorHandler);
+
+    useEffect(() => {
+        clearError();
+    }, []);
+
 
     const handleRegister = (values: registerCredentionals) => {
         dispatch(clearErrors());
@@ -23,6 +30,7 @@ const Register = () => {
                 if (errors.length > 0) {
                     setErrors([]);
                 }
+                navigate("/");
             },
             (err) => {
                 setSuccessMessage(undefined);

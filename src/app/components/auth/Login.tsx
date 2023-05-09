@@ -2,9 +2,10 @@ import LoginForm from "./LoginForm";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { login } from "../../store/features/authSlice";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import authHeader from "../../services/auth-header";
 import DisplayErrors from "../forms/DisplayErrors";
+import { AuthContextErrorHandler as AuthContextErrorHandler } from "../contexts/AuthContextErrorHandler";
 
 export interface LoginFormValues {
     email: string;
@@ -14,8 +15,12 @@ export interface LoginFormValues {
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const { errors, setErrors, clearError } = useContext(AuthContextErrorHandler);
 
-    const [errors, setErrors] = useState<string[]>([]);
+    useEffect(() => {
+        clearError();
+    }, []);
+
 
     const auth = useAppSelector(state => state.auth);
 
