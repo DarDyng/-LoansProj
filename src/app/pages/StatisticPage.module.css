@@ -1,0 +1,26 @@
+.statistic{
+
+}
+
+.statistic-cards{
+    padding: 20px 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.bar-chart{
+    width: 500px;
+}
+
+.line-chart{
+    width: 500px;
+}
+
+.chart-buttons{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 10px;
+}

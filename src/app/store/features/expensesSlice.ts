@@ -1,24 +1,25 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IEditExpenseRequest, IExpense, IExpenseCreateRequest, IExpenseCreateResponse } from "../../models/expenses.models";
+import { ICategory, IEditExpenseRequest, IExpense, IExpenseCreateRequest, IExpenseCreateResponse } from "../../models/expenses.models";
 import axios, { AxiosError } from "axios";
-import { createLoansUrl, getLoansUrl, updateLoansUrl } from "../../utils/endpoints";
+import { createLoansUrl, getCategories, getLoansUrl, updateLoansUrl } from "../../utils/endpoints";
 import { Thunk } from "yup";
 import { BaseThunkAPI } from "@reduxjs/toolkit/dist/createAsyncThunk";
 
 export interface ExpensesState {
     expenses: IExpense[];
+    categories: ICategory[];
     loading: boolean;
 };
 
 const initialState: ExpensesState = {
     expenses: [],
+    categories: [],
     loading: false
 };
 
-
-export const fetchExpenses = createAsyncThunk<IExpense[], undefined, {rejectValue: string}>(
+export const fetchExpenses = createAsyncThunk<IExpense[], undefined, { rejectValue: string }>(
     "expenses/fetchExpenses",
-    async (_,thunkApi) => {
+    async (_, thunkApi) => {
         try {
             return (await axios.get(getLoansUrl)).data;
         } catch (error) {
@@ -27,7 +28,18 @@ export const fetchExpenses = createAsyncThunk<IExpense[], undefined, {rejectValu
     }
 );
 
-export const createExpense = createAsyncThunk<IExpenseCreateResponse, IExpenseCreateRequest, {rejectValue: string}>(
+export const fetchCategories = createAsyncThunk<Array<ICategory>, undefined, { rejectValue: string }>(
+    "expenses/fetchCategories",
+    async (_, thunkApi) => {
+        try {
+            return ((await axios.get(getCategories)).data);
+        } catch (error) {
+            return thunkApi.rejectWithValue("Error occured while fetching your expenses");
+        }
+    }
+)
+
+export const createExpense = createAsyncThunk<IExpenseCreateResponse, IExpenseCreateRequest, { rejectValue: string }>(
     "expenses/createExpense",
     async (expense, thunkApi) => {
         try {
@@ -41,13 +53,13 @@ export const createExpense = createAsyncThunk<IExpenseCreateResponse, IExpenseCr
             return thunkApi.rejectWithValue("Something went wrong");
         }
     }
-)
+);
 
-export const editExpenseAsync = createAsyncThunk<IExpense, IEditExpenseRequest, {rejectValue: string}>(
+export const editExpenseAsync = createAsyncThunk<IExpense, IEditExpenseRequest, { rejectValue: string }>(
     "expenses/editExpenseAsync",
     async (expense, thunkApi) => {
         try {
-            const res = await axios.put(updateLoansUrl+expense.id, expense);
+            const res = await axios.put(updateLoansUrl + expense.id, expense);
             return res.data;
         } catch (error: any | AxiosError) {
             if (axios.isAxiosError(error)) {
@@ -55,16 +67,16 @@ export const editExpenseAsync = createAsyncThunk<IExpense, IEditExpenseRequest, 
                 return thunkApi.rejectWithValue(error.response?.data);
             }
             return thunkApi.rejectWithValue("Something went wrong");
-            
+
         }
     }
-)
+);
 
-export const deleteExepnseAsync = createAsyncThunk<IExpense, {expenseId: string}, {rejectValue: string}>(
+export const deleteExepnseAsync = createAsyncThunk<IExpense, { expenseId: string }, { rejectValue: string }>(
     "expenses/deleteExepnseAsync",
-    async (expenseId,  thunkApi) => {
+    async (expenseId, thunkApi) => {
         try {
-            const res = await axios.delete(updateLoansUrl+expenseId.expenseId);
+            const res = await axios.delete(updateLoansUrl + expenseId.expenseId);
             return res.data;
         } catch (error: any | AxiosError) {
             if (axios.isAxiosError(error)) {
@@ -73,7 +85,7 @@ export const deleteExepnseAsync = createAsyncThunk<IExpense, {expenseId: string}
             }
             return thunkApi.rejectWithValue("Something went wrong");
         }
-    }    
+    }
 )
 
 const expensesSlice = createSlice({
@@ -89,17 +101,17 @@ const expensesSlice = createSlice({
         editExpense: (state: ExpensesState, action: PayloadAction<IExpense>) => {
             const updatedExpenses = state.expenses.map(expense => {
                 if (expense.id === action.payload.id) {
-                  return action.payload;
+                    return action.payload;
                 }
                 return expense;
-              });
-            
-              return {
+            });
+
+            return {
                 ...state,
                 expenses: updatedExpenses
-              };
+            };
         },
-        deleteExpense: (state: ExpensesState, action: PayloadAction<{id: string}>) => {
+        deleteExpense: (state: ExpensesState, action: PayloadAction<{ id: string }>) => {
             state.expenses = state.expenses.filter(x => x.id !== action.payload.id);
         },
     },
@@ -110,36 +122,38 @@ const expensesSlice = createSlice({
             state.expenses = action.payload;
             state.loading = false;
         })
-        .addCase(fetchExpenses.rejected, (state, action) => {
-            console.log("Expenses rejected");
-            console.log(`Error occured - message: ${action.error.message}`);
-            state.loading = false;
-        }).addCase(fetchExpenses.pending, (state, action) => {
-            console.log("Expenses loading");
-            state.loading = true;
-        }).addCase(editExpenseAsync.fulfilled, (state, action) => {
-            let index = state.expenses.findIndex(x => x.id == action.payload.id);
-            if (index > -1) {
-                state.expenses[index] = action.payload;
-            }
-            state.loading = false;
-        }).addCase(editExpenseAsync.rejected, (state, action) => {
-            state.loading = false;
-        }).addCase(editExpenseAsync.pending, (state, action) => {
-            state.loading = true;
-        })
-        .addCase(deleteExepnseAsync.fulfilled, (state, action) => {
-            let itemToDeleteIndex = state.expenses.findIndex(x => x.id == action.payload.id);
-            if (itemToDeleteIndex > -1) {
-                state.expenses[itemToDeleteIndex] = action.payload;
-            }
-            state.loading = false;
-        }).addCase(deleteExepnseAsync.pending,  (state, action) => {
-            state.loading = false;
-        })
-        .addCase(deleteExepnseAsync.rejected, (state, action) => {
-            state.loading = false;
-        });
+            .addCase(fetchExpenses.rejected, (state, action) => {
+                console.log("Expenses rejected");
+                console.log(`Error occured - message: ${action.error.message}`);
+                state.loading = false;
+            }).addCase(fetchExpenses.pending, (state, action) => {
+                console.log("Expenses loading");
+                state.loading = true;
+            }).addCase(editExpenseAsync.fulfilled, (state, action) => {
+                let index = state.expenses.findIndex(x => x.id == action.payload.id);
+                if (index > -1) {
+                    state.expenses[index] = action.payload;
+                }
+                state.loading = false;
+            }).addCase(editExpenseAsync.rejected, (state, action) => {
+                state.loading = false;
+            }).addCase(editExpenseAsync.pending, (state, action) => {
+                state.loading = true;
+            })
+            .addCase(deleteExepnseAsync.fulfilled, (state, action) => {
+                let itemToDeleteIndex = state.expenses.findIndex(x => x.id == action.payload.id);
+                if (itemToDeleteIndex > -1) {
+                    state.expenses[itemToDeleteIndex] = action.payload;
+                }
+                state.loading = false;
+            }).addCase(deleteExepnseAsync.pending, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(deleteExepnseAsync.rejected, (state, action) => {
+                state.loading = false;
+            }).addCase(fetchCategories.fulfilled, (state, action) => {
+                state.categories = action.payload;
+            });
     }
 });
 

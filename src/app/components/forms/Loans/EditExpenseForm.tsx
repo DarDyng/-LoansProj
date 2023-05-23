@@ -3,9 +3,10 @@ import { Col, Form, Modal, Row } from "react-bootstrap";
 import Button from "react-bootstrap/esm/Button";
 import { IEditExpenseRequest, IExpense } from "../../../models/expenses.models";
 import { format, formatISO } from "date-fns";
-import { useAppDispatch } from "../../../store/store";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
 import { editExpense, editExpenseAsync } from "../../../store/features/expensesSlice";
 import { date } from "yup";
+import { useState } from "react";
 
 interface IEditExpenseFormProps {
   expense: IExpense;
@@ -14,30 +15,39 @@ interface IEditExpenseFormProps {
 }
 
 const EditExpenseForm = ({ expense, show, handleClose }: IEditExpenseFormProps) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<IEditExpenseRequest>({
-    defaultValues: {
-      ...expense,
-      startDate: dateToInputDate(new Date(expense.startDate)),
-      endDate: dateToInputDate(new Date(expense.endDate))
-    }
-  });
+  const { register,
+    handleSubmit,
+    setValue,
+    getValues,
+    reset,
+    formState: { errors } } = useForm<IEditExpenseRequest>({
+      defaultValues: {
+        ...expense,
+        startDate: dateToInputDate(new Date(expense.startDate)),
+        endDate: dateToInputDate(new Date(expense.endDate))
+      }
+    });
+
+  const { categories } = useAppSelector(s => s.expenses);
 
   const dispatch = useAppDispatch();
 
   const onSubmit = (data: IEditExpenseRequest) => {
-    
+
     dispatch(editExpenseAsync(data)).unwrap().then(
       res => {
-        window.location.reload();
-      }, 
+
+      },
       rej => {
-        
+
       }
     );
-    
+
 
     handleClose();
   };
+
+  const [currentSumOfLoan, setCurrentSumOfLoan] = useState<number>(0);
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -61,7 +71,7 @@ const EditExpenseForm = ({ expense, show, handleClose }: IEditExpenseFormProps) 
               </Form.Group>
               <Form.Group>
                 <Form.Label>End Date</Form.Label>
-                <Form.Control type="date" {...register("endDate")}/>
+                <Form.Control type="date" {...register("endDate")} />
 
                 {errors.endDate && <Form.Text className="text-danger">End Date is required</Form.Text>}
               </Form.Group>
@@ -72,6 +82,32 @@ const EditExpenseForm = ({ expense, show, handleClose }: IEditExpenseFormProps) 
                 <Form.Control type="number" step="0.01" {...register("sumOfLoan", { required: true })} />
                 {errors.sumOfLoan && <Form.Text className="text-danger">Sum of Loan is required</Form.Text>}
               </Form.Group>
+              <Form.Group controlId="expenseDragSumOfLoan">
+                <Form.Label>Sum of Paid Loan: <Form.Control type="number" placeholder='Sum of Paid Loan' {...register("sumOfPaidLoan", { required: true })} /></Form.Label>
+                <Form.Control
+                  type="range"
+                  min="0"
+                  max={getValues("sumOfLoan")}
+                  step="100"
+                  {...register("sumOfPaidLoan", { required: true })}
+                  onChange={(e) => {
+                    const newValue = Number(e.target.value);
+                    setValue("sumOfPaidLoan", newValue);
+                    setCurrentSumOfLoan(newValue);
+                  }}
+                />
+                {errors.sumOfLoan && <Form.Text className="text-danger">Sum of Loan is required</Form.Text>}
+              </Form.Group>
+              <Form.Group controlId="categoryId">
+                <Form.Label>Category</Form.Label>
+                <Form.Select value={expense.categoryId} {...register("categoryId",
+                  {
+                    required: true,
+                  })}>
+                  {categories.map((g, index) => <option key={g.id} value={g.id}>{g.name}</option>)}
+                </Form.Select>
+                {errors.endDate && <Form.Text className="text-danger">{errors.endDate?.message}</Form.Text>}
+              </Form.Group>
               <Form.Group>
                 <Form.Label>Percents in Year</Form.Label>
                 <Form.Control type="number" step="0.01" {...register("percentsInYear", { required: true })} />
@@ -80,7 +116,9 @@ const EditExpenseForm = ({ expense, show, handleClose }: IEditExpenseFormProps) 
             </Col>
           </Row>
           <Button variant="primary" type="submit">Save</Button>
-          <Button variant="danger" onClick={handleClose} type="button">Cancel</Button>
+          <Button variant="danger" onClick={() => {
+            handleClose(); reset()
+          }} type="button">Cancel</Button>
         </Form>
       </Modal.Body>
     </Modal>

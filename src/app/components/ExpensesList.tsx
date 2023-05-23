@@ -20,10 +20,6 @@ const ExpesnesList = () => {
         dispatch(fetchExpenses());
     }, []);
 
-    useEffect(() => {
-
-    }, [expenses]);
-
     return <>
         {isLoggedIn ? <>
             {loading == true && expenses.length < 1 && <>

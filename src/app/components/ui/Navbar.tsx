@@ -36,7 +36,7 @@ function Navigation() {
           <Nav className="me-auto">
             <Nav.Link><NavLink to={"/"}>Home</NavLink></Nav.Link>
             <Nav.Link><NavLink to={"/about"}>About</NavLink></Nav.Link>
-            <Nav.Link><NavLink to={"/statistics"}>Statistic</NavLink></Nav.Link>
+            <Nav.Link><NavLink to={"/statistic"}>Statistic</NavLink></Nav.Link>
           </Nav>
           <Nav>
             {auth.isLoggedIn ?

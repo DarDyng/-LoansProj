@@ -6,6 +6,7 @@ import Login from "../components/auth/Login";
 import Register from "../components/auth/Register";
 import { AuthContextErrorHandler, AuthProvider } from "../components/contexts/AuthContextErrorHandler";
 import AboutPage from "../pages/AboutPage";
+import StatisticPage from "../pages/StatisticPage";
 
 
 const router = createBrowserRouter(
@@ -14,8 +15,9 @@ const router = createBrowserRouter(
             <Route index element={<MainPage />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
-            <Route path="about" element={<AboutPage/>}></Route>
+            <Route path="about" element={<AboutPage />}></Route>
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="statistic" element={<StatisticPage />} />
         </Route>
     )
 )

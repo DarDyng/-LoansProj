@@ -1,10 +1,12 @@
 import { useForm } from "react-hook-form";
-import { IExpenseCreateRequest } from "../../../models/expenses.models";
+import { ICategory, IExpenseCreateRequest } from "../../../models/expenses.models";
 import { Button, Form, Modal } from "react-bootstrap";
-import { useAppDispatch } from "../../../store/store";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
 import { createExpense } from "../../../store/features/expensesSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getCategories } from "../../../utils/endpoints";
 
 interface ICreateExpenseFormProps {
     show: boolean;
@@ -44,12 +46,7 @@ const CreateLoanForm = ({ show, handleClose }: ICreateExpenseFormProps) => {
         )
     };
 
-    const handleRangeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = Number(e.target.value);
-        setValue("sumOfLoan", newValue);
-        setCurrentSumOfLoan(newValue);
-        setRangeValue(newValue);
-    }
+    const {categories} = useAppSelector(s => s.expenses);
 
     return <>
         <Modal show={show} onHide={handleClose}>
@@ -104,6 +101,17 @@ const CreateLoanForm = ({ show, handleClose }: ICreateExpenseFormProps) => {
                                         }
                                     }
                             })} />
+                        {errors.endDate && <Form.Text className="text-danger">{errors.endDate?.message}</Form.Text>}
+                    </Form.Group>
+                    <Form.Group controlId="category">
+                        <Form.Label>Category</Form.Label>
+                        <Form.Select {...register("categoryId",
+                            {
+                                required: true,
+                            })}>
+                                <option value="">Select category</option>
+                                {categories.map((g, index) => <option key={g.id} value={g.id}>{g.name}</option>)}
+                        </Form.Select>
                         {errors.endDate && <Form.Text className="text-danger">{errors.endDate?.message}</Form.Text>}
                     </Form.Group>
                     <Button variant="primary" type="submit">
