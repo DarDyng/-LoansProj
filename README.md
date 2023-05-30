@@ -23,3 +23,6 @@ Lab 3 - Oleksandr Biletskyi
 
 https://dev.azure.com/dmytroserafym/WebProj/_git/LoansProj/pullrequest/2
 https://dev.azure.com/dmytroserafym/WebProj/_git/LoansProj-BackEnd/pullrequest/3
+
+Lab 4 - Code review by Vika Myron
+https://github.com/DarDyng/-LoansProj/pull/1
