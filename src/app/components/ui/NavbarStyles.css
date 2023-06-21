@@ -5,6 +5,11 @@
 	--textColor: #eee;
 }
 
+.white-text {
+	color: white;
+  }
+  
+
 header {
   background-color: var(--mainColor);
 	color: var(--textColor);

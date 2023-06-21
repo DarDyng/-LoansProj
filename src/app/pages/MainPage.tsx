@@ -27,11 +27,15 @@ const MainPage = () => {
     return (
         <>
             <div style={{textAlign: "center", margin: "1rem"}}>
-                <Button onClick={() => setShowModal(!showModal)}>Add expense</Button>
+            <Button onClick={() => setShowModal(!showModal)} style={{ backgroundColor: "#4682B4", border: "1px solid black" }}>
+  Add Expense
+</Button>
+
             </div>
             <CreateLoanForm show={showModal} handleClose={() => setShowModal(false)} />
             <hr />
-            <h3 style={{textAlign: "center"}}>Your loans</h3>
+            <h3 style={{textAlign: "center"}}>Your Loans</h3>
+            <hr />
             <ExpensesList />
         </>
     );

@@ -1,24 +1,58 @@
-.statistic{
 
+.statistic1 {
 }
 
-.statistic-cards{
+.header {
+    margin-bottom: 40px; /* Відстань 40 пікселів від хедера */
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center; /* Відцентрування по горизонталі */
+    align-items: center; /* Відцентрування по вертикалі */
+    padding: 5%; /* Відстань від країв екрану (5% розміру батьківського елемента) */
+}
+
+.statistic {
+    flex-basis: 30%;
+    background-color: #F5F5F5; /* Світло-сірий колір */
+    border-radius: 10px; /* Згладжені кути (зменшено радіус) */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Згладжений тінь */
+    margin-right: 2.5%; /* Відстань між блоками (2.5% розміру батьківського елемента) */
+    padding: 2.5%; /* Відстань від країв (2.5% розміру блоку) */
+}
+
+.chart {
+    flex-basis: 70%;
+    background-color: #F5F5F5; /* Світло-сірий колір */
+    border-radius: 10px; /* Згладжені кути (зменшено радіус) */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Згладжений тінь */
+    margin-left: 2.5%; /* Відстань між блоками (2.5% розміру батьківського елемента) */
+    padding: 2.5%; /* Відстань від країв (2.5% розміру блоку) */
+}
+
+
+
+
+.statistic-cards {
     padding: 20px 0px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 20px;
 }
 
-.bar-chart{
+
+.bar-chart {
     width: 500px;
 }
 
-.line-chart{
+.line-chart {
     width: 500px;
 }
 
-.chart-buttons{
+.chart-buttons {
     display: flex;
     justify-content: center;
     align-content: center;

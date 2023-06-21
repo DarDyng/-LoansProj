@@ -1,0 +1,23 @@
+.about-page {
+    padding-top: 20px;
+  }
+  
+  .about-page__container {
+    margin-bottom: 20px;
+  }
+  
+  .about-page__section {
+    background-color: #f2f2f2;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.5s;
+  }
+  
+  .about-page__section--gray-bg {
+    background-color: #f2f2f2;
+  }
+  
+  .about-page__section--hovered {
+    font-size: 19px;
+  }
+  

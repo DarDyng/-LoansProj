@@ -5,7 +5,23 @@ import { useAppDispatch, useAppSelector } from "../../store/store";
 import authService from "../../services/auth-service";
 import { logout } from "../../store/features/authSlice";
 
+
 function Navigation() {
+
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const linkStyle = {
+    color: isHovered ? 'orange' : 'white'
+  };
+
   const auth = useAppSelector(state => state.auth);
   const [email, setEmail] = useState<string>("");
 
@@ -30,7 +46,18 @@ function Navigation() {
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
-        <Navbar.Brand><Link to={"/"}>Credit App</Link></Navbar.Brand>
+        <Nav className="me-auto">
+        <Nav.Link href="#"  onClick={() => window.open("https://t.me/dardyng", "_blank")}         
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={linkStyle}>
+           Dmytro Serafym  
+        </Nav.Link>
+        </Nav>
+
+
+        <Navbar.Brand> <Link to={"/"} style={{ fontFamily: "Arial, sans-serif", fontSize: "24px", fontWeight: "bold" }}>   Loan Portfolio
+          </Link></Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
